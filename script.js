@@ -1,10 +1,24 @@
 const myLibrary = [];
 const bookShelf = document.getElementById("book-shelf");
 
-function book(author, title, pages) {
-  const readStatus = false;
-  myLibrary.push({ author, title, pages });
-  return { author, title, pages };
+class Book {
+    read = false;
+    constructor(author, title, pages) {
+        this.author = author;
+        this.title = title;
+        this.pages = pages;
+        myLibrary.push({ author, title, pages })
+    };
+    changeReadStatus() {
+        this.read = this.read === false ? true : false
+    }
+    get ReadStatus() {
+        return this.read;
+    };
+        
+//   const readStatus = false;
+//   myLibrary.push({ author, title, pages });
+//   return { author, title, pages };
 }
 
 // Book.prototype.readStatus = function() {
@@ -12,26 +26,25 @@ function book(author, title, pages) {
 // }
 
 function libraryController() {
-    const houseOfLeaves = book("Mark, Z., Danielewski",
+    const houseOfLeaves = new Book("Mark, Z., Danielewski",
    "House of Leaves",
    "709"
    );
-  const popisho = book("Leone Ross",
+  const popisho = new Book("Leone Ross",
    "Popisho",
    "304"
    );
-   const tenderIsTheFlesh = book(
+   const tenderIsTheFlesh = new Book(
     "Agustina Bazterrica",
     "Tender is the Flesh",
     "205"
   );
-  const bodyKeepsTheScore = book(
+  const bodyKeepsTheScore = new Book(
     "Bessel van der Kolk",
     "Body Keeps the Score",
     "807"
   );
 
-  console.log(houseOfLeaves);
   console.table(myLibrary);
 }
 
