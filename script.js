@@ -1,146 +1,109 @@
-const myLibrary = [];
-const bookShelf = document.getElementById("book-shelf");
-
 class Book {
-    read = false;
-    constructor(author, title, pages) {
-        this.author = author;
-        this.title = title;
-        this.pages = pages;
-        myLibrary.push({ author, title, pages })
-    };
-    changeReadStatus() {
-        this.read = this.read === false ? true : false
-    }
-    get ReadStatus() {
-        return this.read;
-    };
-        
-//   const readStatus = false;
-//   myLibrary.push({ author, title, pages });
-//   return { author, title, pages };
+  read = false;
+  constructor(author, title, pages) {
+    this.author = author;
+    this.title = title;
+    this.pages = pages;
+  }
+  changeReadStatus() {
+    this.read = this.read === false ? true : false;
+  }
+  get ReadStatus() {
+    return this.read;
+  }
 }
 
-// Book.prototype.readStatus = function() {
-    //     return read != 1 ? 'Not read' : 'Read';
-// }
+class Library {
+  books = [];
 
-function libraryController() {
-    const houseOfLeaves = new Book("Mark, Z., Danielewski",
-   "House of Leaves",
-   "709"
-   );
-  const popisho = new Book("Leone Ross",
-   "Popisho",
-   "304"
-   );
-   const tenderIsTheFlesh = new Book(
-    "Agustina Bazterrica",
-    "Tender is the Flesh",
-    "205"
-  );
-  const bodyKeepsTheScore = new Book(
-    "Bessel van der Kolk",
-    "Body Keeps the Score",
-    "807"
-  );
+  constructor(books = []) {
+    this.books = [...books];
+  }
 
-  console.table(myLibrary);
-}
-
-libraryController();
-
-function screenController() {
-    function initializeLibrary(library) {
-        for (let index = 0; index < library.length; index++) {
-            const book = document.createElement("div");
-      book.classList.add("books");
-      book.id = "book" + index; // 0 indexed array
-
-      const info = getBookInfo(library, index);
-      book.appendChild(info);
-
-      const read = readReport();
-      info.appendChild(read);
-
-      const button = removeFromLibraryButton(library, index);
-      book.appendChild(button);
-
-      bookShelf.appendChild(book);
+  addBook(author, title, pages) {
+    const existingBook = this.books.find(
+      (book) =>
+        book.author === author && book.title === title && book.pages === pages
+    );
+    if (existingBook) {
+      console.log("This book already exists in the library.");
+    } else {
+      const book = new Book(author, title, pages);
+      this.books.push(book);
     }
-  };
+  }
 
-  initializeLibrary(myLibrary);
+  saveBooks() {
+    const booksToSave = JSON.stringify(this.books);
+    localStorage.setItem("libraryBooks", booksToSave);
+  }
 
-  function getBookInfo(library, index) {
-    const info = document.createElement("div");
-    info.classList.add("info");
-    Object.values(library[index]).forEach((value) => {
-      const data = document.createElement("div");
-      data.appendChild(document.createTextNode(value));
-      info.appendChild(data);
+  getBooks() {
+    this.books = [];
+    const booksFromStorage = localStorage.getItem("libraryBooks");
+    [...JSON.parse(booksFromStorage)].forEach((book) => {
+      const bookClass = new Book(book.author, book.title, book.pages);
+      this.books.push(bookClass);
     });
-    return info;
-  };
+  }
 
-  function removeFromLibraryButton(library, index) {
-    const button = document.createElement("a");
-    button.appendChild(document.createTextNode("Remove from library"));
-    button.dataset.book = library.indexOf(library[index]);
-    button.classList.add("button");
-    button.addEventListener("click", (e) => {
-      myLibrary.splice(button.dataset.book, 1);
-      clearBookshelf();
-      initializeLibrary(myLibrary);
-    });
-    return button;
-  };
-
-  function readReport() {
-    const readReport = document.createElement("div");
-    const checkbox = document.createElement("input");
-    readReport.appendChild(checkbox);
-    checkbox.type = "checkbox";
-    readReport.appendChild(document.createTextNode("Read"));
-    readReport.classList.add("read-status");
-    return readReport;
-  };
-
-  function clearBookshelf() {
-    let books = document.getElementsByClassName("books");
-    while (books[0]) {
-      books[0].parentNode.removeChild(books[0]);
-    }
-  };
-
+  removeBook(bookTitle) {
+    this.books = this.books.filter((book) => book.title !== bookTitle);
+  }
 }
 
-screenController();
+const screenController = (function () {
+  const bookShelf = document.getElementById("book-shelf");
+  const myLibrary = new Library();
+  const addBookButton = document.getElementById("new-book-button");
 
+  function initializeBookShelf() {
+    while (bookShelf.firstChild) {
+      bookShelf.removeChild(bookShelf.firstChild);
+    }
+    myLibrary.getBooks();
+    console.log(myLibrary.books);
+    myLibrary.books.forEach((book) => {
+      const bookCard = document.createElement("div");
+      bookCard.classList.add("books");
+      bookCard.innerText = `${book.title} by ${book.author}. ${book.pages} pages.`;
+      const button = document.createElement("a");
+      button.classList.add("button");
+      button.innerHTML = "Remove from library";
+      button.addEventListener("click", () => {
+        myLibrary.removeBook(book.title);
+        bookCard.remove();
+        myLibrary.saveBooks();
+        initializeBookShelf();
+      });
+      bookCard.append(button);
+      bookShelf.append(bookCard);
+    });
+  }
 
+  initializeBookShelf(); // initialize bookshelf on page load
 
-const newBookButton = document.getElementById("new-book-button");
-const cancelButton = document.getElementById("cancel");
-const dialog = document.getElementById("book-dialog");
-dialog.returnValue = "newBook";
-const form = dialog.querySelector("form");
+  addBookButton.addEventListener("click", () => {
+    const dialog = document.getElementById("book-dialog");
+    const cancelButton = document.getElementById("cancel");
+    dialog.returnValue = "newBook";
+    const form = dialog.querySelector("form");
+    dialog.showModal();
 
-newBookButton.addEventListener("click", () => {
-  dialog.showModal();
-});
+    cancelButton.addEventListener("click", () => {
+      dialog.close("New book cancelled");
+    });
 
-cancelButton.addEventListener("click", () => {
-  dialog.close("New book cancelled");
-});
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      let bookInfo = new FormData(event.target);
+      const { author, title, length } = Object.fromEntries(bookInfo);
+      myLibrary.addBook(author, title, length);
+      myLibrary.saveBooks();
+      dialog.close("New Book added!");
+      initializeBookShelf();
+    });
+  });
 
-form.addEventListener("submit", function (event) {
-  event.preventDefault();
-  let bookInfo = new FormData(event.target);
-  const { author, title, length, read } = Object.fromEntries(bookInfo);
-  const newBook = book(author, title, length);
-  console.log(newBook);
-  addBookToLibrary(newBook);
-  dialog.close("New Book added!");
-  clearBookshelf();
-  initializeLibrary(myLibrary);
-});
+  return { initializeBookShelf };
+})();

@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>library</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>library</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-  <script src="script.js" defer></script>
-  <div id="book-shelf"></div>
-  <button id="new-book-button">NEW BOOK</button>
-  <dialog id="book-dialog">
-    <form method="dialog">
-      <label for="author">Author:</label><br>
-      <input type="text" name="author"><br>
-      <label for="title">Title:</label><br>
-      <input type="text" name="title"><br>
-      <label for="length">Length:</label><br>
-      <input type="text" name="length"><br>
-      <label for="read">have you read?:</label><br>
-      <input type="text" name="read"><br>
-      <div>
-        <button id="cancel" type="reset">Cancel</button>
-        <input type="submit" value="Confirm">
-      </div>
-    </form>
-  </dialog>
-</body>
-
+  <body>
+    <script src="script.js" defer></script>
+    <div id="book-shelf"></div>
+    <a class="button" id="new-book-button">NEW BOOK</a>
+    <dialog id="book-dialog">
+      <form method="dialog">
+        <label for="author">Author:</label><br />
+        <input type="text" name="author" /><br />
+        <label for="title">Title:</label><br />
+        <input type="text" name="title" /><br />
+        <label for="length">Length:</label><br />
+        <input type="text" name="length" /><br />
+        <div>
+          <input type="submit" value="Confirm" />
+          <button id="cancel" type="reset">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
 </html>
