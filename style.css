@@ -58,3 +58,10 @@ body {
 .button:hover {
   background-color: #ffffa4;
 }
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: #ffffa4;
+}
