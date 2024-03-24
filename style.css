@@ -34,6 +34,10 @@ body {
   margin: 2rem;
 }
 
+.books-read {
+  background-color: #e15656;
+}
+
 .info {
   background-color: antiquewhite;
   display: flex;

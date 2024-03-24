@@ -43,6 +43,9 @@ class Library {
     const booksFromStorage = localStorage.getItem("libraryBooks");
     [...JSON.parse(booksFromStorage)].forEach((book) => {
       const bookClass = new Book(book.author, book.title, book.pages);
+      if (book.read == true) {
+        bookClass.changeReadStatus();
+      }
       this.books.push(bookClass);
     });
   }
@@ -65,18 +68,38 @@ const screenController = (function () {
     console.log(myLibrary.books);
     myLibrary.books.forEach((book) => {
       const bookCard = document.createElement("div");
-      bookCard.classList.add("books");
       bookCard.innerText = `${book.title} by ${book.author}. ${book.pages} pages.`;
-      const button = document.createElement("a");
-      button.classList.add("button");
-      button.innerHTML = "Remove from library";
-      button.addEventListener("click", () => {
+      console.log(book.read);
+      book.read === true
+        ? bookCard.classList.add("books", "books-read")
+        : bookCard.classList.add("books");
+
+      const removeButton = document.createElement("a");
+      removeButton.classList.add("button");
+      removeButton.innerHTML = "Remove from library";
+      removeButton.addEventListener("click", () => {
         myLibrary.removeBook(book.title);
         bookCard.remove();
         myLibrary.saveBooks();
         initializeBookShelf();
       });
-      bookCard.append(button);
+
+      const readButton = document.createElement("a");
+      readButton.classList.add("button");
+      book.read == true
+        ? (readButton.innerHTML = `I haven't read this!`)
+        : (readButton.innerHTML = `I've read this!`);
+      readButton.addEventListener("click", () => {
+        book.changeReadStatus();
+        book.read
+          ? (readButton.innerHTML = `I've read this!`)
+          : (readButton.innerHTML = `I haven't read this!`);
+        console.log(book.read);
+        myLibrary.saveBooks();
+        initializeBookShelf();
+      });
+      bookCard.append(readButton);
+      bookCard.append(removeButton);
       bookShelf.append(bookCard);
     });
   }
@@ -104,6 +127,4 @@ const screenController = (function () {
       initializeBookShelf();
     });
   });
-
-  return { initializeBookShelf };
 })();
